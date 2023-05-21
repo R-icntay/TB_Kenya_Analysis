@@ -11,7 +11,7 @@ library(paletteer)
 # library(lubridate)
 library(sf)
 # library(ggplot2)
-library(tmap)
+#library(tmap)
 library(leaflet)
 # library(dplyr)
 # library(wesanderson)
@@ -19,10 +19,17 @@ library(leaflet)
 
 
 #Read Data
-here::i_am("Tuberclosis EDA/app.R")
-tuberclosis <-read_excel("tuberclosis.xlsx") %>%  
-  clean_names()
+#here::i_am("TB_Kenya/app.R")
+# Read and save as RDS files so that we can minimise the app size!!!
 #cleannames is used to put all titles into small letters and add underscores to words instead of spacing them
+
+# tuberclosis <-read_excel("tuberclosis.xlsx") %>%  
+#   clean_names()
+#saveRDS(tuberclosis, "tuberclosis")
+
+# Read RDS 
+tuberclosis <- readRDS("tuberclosis")
+
 
 #Detect Missing Values
 anyNA(tuberclosis)
@@ -75,11 +82,11 @@ colSums(is.na(newtuberclosis))
 
 
 #read in the kenyan shapefiles
-
-countySHP <- read_sf("D:\\goodshapefile\\currentshapefiles\\Counties.shp", quiet = TRUE, stringsAsFactors = FALSE,as_tibble = TRUE)
-saveRDS(countySHP, "countySHP.rds")
-readRDS(file = "countySHP.rds")
-#countySHP <- readRDS("subcountySHP")
+# 
+# countySHP <- read_sf("D:\\goodshapefile\\currentshapefiles\\Counties.shp", quiet = TRUE, stringsAsFactors = FALSE,as_tibble = TRUE)
+# saveRDS(countySHP, "countySHP.rds")
+#readRDS(file = "countySHP.rds")
+countySHP <- readRDS("countySHP.rds")
 
 #View(countySHP %>% st_drop_geometry())
 
@@ -308,7 +315,7 @@ ui <- navbarPage(
   tabPanel(
     title = "OVERVIEW",
     br(), br(),
-    tags$img(height = 600, width = 1000, src = "teebee.jpg"),
+    tags$img(src = "teebee.jpg"),
     br(), br(),
     HTML(paste("In Kenya, Tuberculosis is ranked as the 5th leading cause of death. The spread of the disease is mostly as a result of breathing air that contains air droplets from an infected person(through sneezing and coughing). Most cases recorded are from busy and congested counties, such as Nairobi, which continuously pose as a threat since it hard to control. Luckily, the government of Kenya has implemented free TB diagnosis and treatment in public hospitals and Faith Based Organizations. In addition to this, sensitization on preventive measures and care of TB patients has played a huge role in reducing the number of cases. This dashboard contains a detailed EDA based on data collected across different counties.")),
     br(),
