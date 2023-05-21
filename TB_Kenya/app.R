@@ -22,52 +22,57 @@ library(leaflet)
 #here::i_am("TB_Kenya/app.R")
 # Read and save as RDS files so that we can minimise the app size!!!
 #cleannames is used to put all titles into small letters and add underscores to words instead of spacing them
-
-# tuberclosis <-read_excel("tuberclosis.xlsx") %>%  
+# 
+# tuberclosis <- readr::read_csv("https://github.com/R-icntay/TB_Kenya_Analysis/raw/main/TB_Kenya/tuberclosis.csv") %>%
 #   clean_names()
 #saveRDS(tuberclosis, "tuberclosis")
 
 # Read RDS 
+#tuberclosis <- readRDS("tuberclosis")
+
+
+# #Detect Missing Values
+# anyNA(tuberclosis)
+# 
+# #Sum of Missing Values
+# colSums(is.na(tuberclosis))
+# 
+# #Replace missing values in each column
+# #Replacing missing values with "not done" answer in the cotrimoxazole...column
+# tuberclosis <- tuberclosis %>% 
+#   mutate(cotrimoxazole_preventive_therapy_y_n=replace_na(cotrimoxazole_preventive_therapy_y_n,"not_done"))%>% 
+#   mutate(cotrimoxazole_preventive_therapy_y_n=case_when(
+#     cotrimoxazole_preventive_therapy_y_n=="N/A"~"not_administered",TRUE~cotrimoxazole_preventive_therapy_y_n)) %>% 
+#   mutate(zone=replace_na(zone, "madaraka_zone_b")) %>% 
+#   mutate(health_facility=replace_na(health_facility, "metropolitan_hospital_nairobi")) %>% 
+#   mutate(regimen=replace_na(regimen,"not_administered")) %>% 
+#   mutate(art_y_n=replace_na(art_y_n,"not_administered")) %>% 
+#   mutate(art_y_n=case_when(
+#     art_y_n=="N/A"~"not_applicable",
+#     TRUE~art_y_n
+#   )) %>% 
+#   mutate(art_y_n=case_when(
+#     art_y_n=="Y"~"administered",
+#     TRUE~art_y_n
+#   )) %>% 
+#   mutate(comorbidity=replace_na(comorbidity,"not_diagnosed"))%>% 
+#   mutate(xray=replace_na(xray, "not_done")) %>% 
+#   mutate(xray=case_when(
+#     xray=="ND"~"not_determined",
+#     TRUE~xray
+#   ))
+
+
+# Read RDS 
 tuberclosis <- readRDS("tuberclosis")
 
-
-#Detect Missing Values
-anyNA(tuberclosis)
-
-#Sum of Missing Values
-colSums(is.na(tuberclosis))
-
-#Replace missing values in each column
-#Replacing missing values with "not done" answer in the cotrimoxazole...column
-tuberclosis <- tuberclosis %>% 
-  mutate(cotrimoxazole_preventive_therapy_y_n=replace_na(cotrimoxazole_preventive_therapy_y_n,"not_done"))%>% 
-  mutate(cotrimoxazole_preventive_therapy_y_n=case_when(
-    cotrimoxazole_preventive_therapy_y_n=="N/A"~"not_administered",TRUE~cotrimoxazole_preventive_therapy_y_n)) %>% 
-  mutate(zone=replace_na(zone, "madaraka_zone_b")) %>% 
-  mutate(health_facility=replace_na(health_facility, "metropolitan_hospital_nairobi")) %>% 
-  mutate(regimen=replace_na(regimen,"not_administered")) %>% 
-  mutate(art_y_n=replace_na(art_y_n,"not_administered")) %>% 
-  mutate(art_y_n=case_when(
-    art_y_n=="N/A"~"not_applicable",
-    TRUE~art_y_n
-  )) %>% 
-  mutate(art_y_n=case_when(
-    art_y_n=="Y"~"administered",
-    TRUE~art_y_n
-  )) %>% 
-  mutate(comorbidity=replace_na(comorbidity,"not_diagnosed"))%>% 
-  mutate(xray=replace_na(xray, "not_done")) %>% 
-  mutate(xray=case_when(
-    xray=="ND"~"not_determined",
-    TRUE~xray
-  ))
 
 #selecting desired columns
 newtuberclosis <- tuberclosis %>% 
   select(serial_number:is_patient_prisoner, sex_m_f:height_mtrs, dot_by,type_of_tb_p_ep, type_of_patient, xray, sputum_smear_examination_0th_month_result, sputum_smear_examination_2by3_month_result,sputam_smear_examination_5th_month_result, sputum_smear_examination_6by8_month_result, regimen,hiv_status,partner_hiv_status, cotrimoxazole_preventive_therapy_y_n, art_y_n,nutrition_support, comorbidity, treatment_outcome,is_from_tibu_lite)
 
 #check if missing values are present
-colSums(is.na(newtuberclosis)) 
+#colSums(is.na(newtuberclosis)) 
 
 
 
@@ -90,17 +95,17 @@ countySHP <- readRDS("countySHP.rds")
 
 #View(countySHP %>% st_drop_geometry())
 
-#inspect a few rows
-print(countySHP[6:9], n = 3)
-
-#inspect column names
-colnames(countySHP)
-
-#inspect the class shape files
-class(countySHP)
-
-#Look at the variable data types
-glimpse(countySHP)
+# #inspect a few rows
+# print(countySHP[6:9], n = 3)
+# 
+# #inspect column names
+# colnames(countySHP)
+# 
+# #inspect the class shape files
+# class(countySHP)
+# 
+# #Look at the variable data types
+# glimpse(countySHP)
 
 #View the geometry column
 countySHP_geometry <- st_geometry(countySHP)
@@ -216,9 +221,9 @@ merged_tb_df <- merged_tb_df %>%
 
 
 ### Class of the merged data
-class(merged_tb_df)
+#class(merged_tb_df)
 ### Column names
-colnames(merged_tb_df)
+#colnames(merged_tb_df)
 
 
 
@@ -226,34 +231,34 @@ colnames(merged_tb_df)
 #plot()
 #We are going to plot a base plot / map.
 
-plot(countySHP$geometry, lty = 3, col = "chocolate")
-
-#ggplot2()
-map1 <- ggplot(data = merged_tb_df)+
-  geom_sf(aes(geometry = geometry, fill = tb_totals))+
-  theme_void()+
-  labs(title = "Distribution of Tuberclosis Cases In Different Counties in Kenya",
-       caption = "By:Happiness Ndanu")+
-  theme(plot.title = element_text(family = "URW Palladio L, Italic",size = 16, hjust = 0.5),
-        legend.title = element_blank(),
-        plot.caption = element_text(family = "URW Palladio L, Italic",size = 12))+
-  #scale_fill_gradient(low = "darkgreen", high = "red")
-  scale_fill_viridis_c(option = "A")
-map1
+# plot(countySHP$geometry, lty = 3, col = "chocolate")
+# 
+# #ggplot2()
+# map1 <- ggplot(data = merged_tb_df)+
+#   geom_sf(aes(geometry = geometry, fill = tb_totals))+
+#   theme_void()+
+#   labs(title = "Distribution of Tuberclosis Cases In Different Counties in Kenya",
+#        caption = "By:Happiness Ndanu")+
+#   theme(plot.title = element_text(family = "URW Palladio L, Italic",size = 16, hjust = 0.5),
+#         legend.title = element_blank(),
+#         plot.caption = element_text(family = "URW Palladio L, Italic",size = 12))+
+#   #scale_fill_gradient(low = "darkgreen", high = "red")
+#   scale_fill_viridis_c(option = "A")
+# map1
 
 
 #9.3 tmap()
-tmap_mode("plot") #Set tmap mode to static plotting or interactive viewing
+# tmap_mode("plot") #Set tmap mode to static plotting or interactive viewing
 merged_tb_df <- st_sf(merged_tb_df)
 
-map2 <- tm_shape(merged_tb_df) +
-  tm_fill("tb_totals",palette="YlOrRd",
-          title="Distribution of TB Cases In Kenyan Counties",
-          id = "NAME_1") +
-  tm_borders(col = "blue",lty = 3)+
-  tm_layout(legend.position = c("left", "bottom"))+
-  tmap_mode(mode = "view")
-map2
+# map2 <- tm_shape(merged_tb_df) +
+#   tm_fill("tb_totals",palette="YlOrRd",
+#           title="Distribution of TB Cases In Kenyan Counties",
+#           id = "NAME_1") +
+#   tm_borders(col = "blue",lty = 3)+
+#   tm_layout(legend.position = c("left", "bottom"))+
+#   tmap_mode(mode = "view")
+# map2
 
 
 
@@ -272,20 +277,20 @@ labels <- sprintf(
 
 
 ##Generate the graph
-leaflet(merged_tb_df) %>%
-  addTiles() %>%
-  addPolygons(color = "blue", weight = 1, dashArray = "3", fillColor = ~pal(tb_totals),
-              highlight= highlightOptions(
-                weight = 4,
-                color = "blue",
-                dashArray = "",
-                bringToFront = TRUE),
-              label = labels,
-              labelOptions = labelOptions(
-                style = list("font-weight"="normal", padding="3px 8px"),
-                textsize = "15px",
-                direction = "auto")) %>%
-  addLegend(position = c("bottomright"), pal,values = ~tb_totals)
+# leaflet(merged_tb_df) %>%
+#   addTiles() %>%
+#   addPolygons(color = "blue", weight = 1, dashArray = "3", fillColor = ~pal(tb_totals),
+#               highlight= highlightOptions(
+#                 weight = 4,
+#                 color = "blue",
+#                 dashArray = "",
+#                 bringToFront = TRUE),
+#               label = labels,
+#               labelOptions = labelOptions(
+#                 style = list("font-weight"="normal", padding="3px 8px"),
+#                 textsize = "15px",
+#                 direction = "auto")) %>%
+#   addLegend(position = c("bottomright"), pal,values = ~tb_totals)
 
 
 counties= newtuberclosis %>% 
@@ -315,7 +320,8 @@ ui <- navbarPage(
   tabPanel(
     title = "OVERVIEW",
     br(), br(),
-    tags$img(src = "teebee.jpg"),
+    HTML('<center><img src = "teebee.jpg" width = 700 height = 300></center>'),
+    #tags$img(src = "teebee.jpg", height = 300, width = 700),
     br(), br(),
     HTML(paste("In Kenya, Tuberculosis is ranked as the 5th leading cause of death. The spread of the disease is mostly as a result of breathing air that contains air droplets from an infected person(through sneezing and coughing). Most cases recorded are from busy and congested counties, such as Nairobi, which continuously pose as a threat since it hard to control. Luckily, the government of Kenya has implemented free TB diagnosis and treatment in public hospitals and Faith Based Organizations. In addition to this, sensitization on preventive measures and care of TB patients has played a huge role in reducing the number of cases. This dashboard contains a detailed EDA based on data collected across different counties.")),
     br(),
